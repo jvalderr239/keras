@@ -54,6 +54,7 @@ def InceptionResNetV2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the Inception-ResNet v2 architecture.
@@ -113,6 +114,8 @@ def InceptionResNetV2(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
       **kwargs: For backwards compatibility only.
 
     Returns:
@@ -156,9 +159,14 @@ def InceptionResNetV2(
             img_input = layers.Input(tensor=input_tensor, shape=input_shape)
         else:
             img_input = input_tensor
+    
+    x = img_input
+    
+    if include_preprocessing:
+        x = preprocess_input(x)
 
     # Stem block: 35 x 35 x 192
-    x = conv2d_bn(img_input, 32, 3, strides=2, padding="valid")
+    x = conv2d_bn(x, 32, 3, strides=2, padding="valid")
     x = conv2d_bn(x, 32, 3, padding="valid")
     x = conv2d_bn(x, 64, 3)
     x = layers.MaxPooling2D(3, strides=2)(x)

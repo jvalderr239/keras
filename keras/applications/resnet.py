@@ -85,6 +85,7 @@ def ResNet(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the ResNet, ResNetV2, and ResNeXt architecture.
@@ -174,6 +175,22 @@ def ResNet(
             img_input = input_tensor
 
     bn_axis = 3 if backend.image_data_format() == "channels_last" else 1
+    
+    x = img_input
+
+    if include_preprocessing:
+        # Apply original V1 preprocessing for Bx variants
+        # if number of channels allows it
+        num_channels = input_shape[bn_axis - 1]
+        if model_name.split("-")[-1].endswith("V2") and num_channels == 3:
+            x = layers.Rescaling(scale=1.0 / 128.0, offset=-1)(x)
+        else:
+            x = layers.Rescaling(scale=1.0 / 255)(x)
+            x = layers.Normalization(
+                mean=[0.485, 0.456, 0.406],
+                variance=[0.229**2, 0.224**2, 0.225**2],
+                axis=bn_axis,
+            )(x)
 
     x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)), name="conv1_pad")(
         img_input
@@ -508,6 +525,7 @@ def ResNet50(
     input_shape=None,
     pooling=None,
     classes=1000,
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the ResNet50 architecture."""
@@ -529,6 +547,7 @@ def ResNet50(
         input_shape,
         pooling,
         classes,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -543,6 +562,7 @@ def ResNet101(
     input_shape=None,
     pooling=None,
     classes=1000,
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the ResNet101 architecture."""
@@ -564,6 +584,7 @@ def ResNet101(
         input_shape,
         pooling,
         classes,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -578,6 +599,7 @@ def ResNet152(
     input_shape=None,
     pooling=None,
     classes=1000,
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the ResNet152 architecture."""
@@ -599,6 +621,7 @@ def ResNet152(
         input_shape,
         pooling,
         classes,
+        include_preprocessing=include_preprocessing
         **kwargs,
     )
 
@@ -608,9 +631,24 @@ def ResNet152(
     "keras.applications.resnet.preprocess_input",
 )
 def preprocess_input(x, data_format=None):
-    return imagenet_utils.preprocess_input(
-        x, data_format=data_format, mode="caffe"
-    )
+    """A placeholder method for backward compatibility.
+
+    The preprocessing logic has been included in the ResNet model
+    implementation. Users are no longer required to call this method to
+    normalize the input data. This method does nothing and only kept as a
+    placeholder to align the API surface between old and new version of model.
+
+    Args:
+      x: A floating point `numpy.array` or a `tf.Tensor`.
+      data_format: Optional data format of the image tensor/array. Defaults to
+        None, in which case the global setting
+        `tf.keras.backend.image_data_format()` is used (unless you changed it,
+        it defaults to "channels_last").{mode}
+
+    Returns:
+      Unchanged `numpy.array` or `tf.Tensor`.
+    """
+    return x
 
 
 @keras_export(

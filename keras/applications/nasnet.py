@@ -75,6 +75,7 @@ def NASNet(
     classes=1000,
     default_size=None,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates a NASNet model.
 
@@ -148,6 +149,8 @@ def NASNet(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -226,6 +229,11 @@ def NASNet(
     channel_dim = 1 if backend.image_data_format() == "channels_first" else -1
     filters = penultimate_filters // 24
 
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
+
     x = layers.Conv2D(
         stem_block_filters,
         (3, 3),
@@ -234,7 +242,7 @@ def NASNet(
         use_bias=False,
         name="stem_conv1",
         kernel_initializer="he_normal",
-    )(img_input)
+    )(x)
 
     x = layers.BatchNormalization(
         axis=channel_dim, momentum=0.9997, epsilon=1e-3, name="stem_bn1"
@@ -364,6 +372,7 @@ def NASNetMobile(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
 ):
     """Instantiates a Mobile NASNet model in ImageNet mode.
 
@@ -414,6 +423,8 @@ def NASNetMobile(
             `classifier_activation=None` to return the logits of the "top"
             layer.  When loading pretrained weights, `classifier_activation` can
             only be `None` or `"softmax"`.
+        include_preprocessing: Boolean, whether to include the preprocessing layer
+            at the bottom of the network. Defaults to `True`.
 
     Returns:
         A Keras model instance.
@@ -438,6 +449,7 @@ def NASNetMobile(
         classes=classes,
         default_size=224,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
@@ -452,6 +464,7 @@ def NASNetLarge(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates a NASNet model in ImageNet mode.
 
@@ -502,6 +515,8 @@ def NASNetLarge(
             `classifier_activation=None` to return the logits of the "top"
             layer.  When loading pretrained weights, `classifier_activation` can
             only be `None` or `"softmax"`.
+        include_preprocessing: Boolean, whether to include the preprocessing layer
+            at the bottom of the network. Defaults to `True`.
 
     Returns:
         A Keras model instance.
@@ -526,6 +541,7 @@ def NASNetLarge(
         classes=classes,
         default_size=331,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 

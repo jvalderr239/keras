@@ -56,6 +56,7 @@ def InceptionV3(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the Inception v3 architecture.
 
@@ -114,6 +115,8 @@ def InceptionV3(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -157,7 +160,12 @@ def InceptionV3(
     else:
         channel_axis = 3
 
-    x = conv2d_bn(img_input, 32, 3, 3, strides=(2, 2), padding="valid")
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
+
+    x = conv2d_bn(x, 32, 3, 3, strides=(2, 2), padding="valid")
     x = conv2d_bn(x, 32, 3, 3, padding="valid")
     x = conv2d_bn(x, 64, 3, 3)
     x = layers.MaxPooling2D((3, 3), strides=(2, 2))(x)

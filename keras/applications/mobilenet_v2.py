@@ -106,6 +106,7 @@ def MobileNetV2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the MobileNetV2 architecture.
@@ -185,6 +186,8 @@ def MobileNetV2(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
       **kwargs: For backwards compatibility only.
 
     Returns:
@@ -340,6 +343,11 @@ def MobileNetV2(
 
     channel_axis = 1 if backend.image_data_format() == "channels_first" else -1
 
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
+
     first_block_filters = _make_divisible(32 * alpha, 8)
     x = layers.Conv2D(
         first_block_filters,
@@ -348,7 +356,7 @@ def MobileNetV2(
         padding="same",
         use_bias=False,
         name="Conv1",
-    )(img_input)
+    )(x)
     x = layers.BatchNormalization(
         axis=channel_axis, epsilon=1e-3, momentum=0.999, name="bn_Conv1"
     )(x)

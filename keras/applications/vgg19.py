@@ -54,6 +54,7 @@ def VGG19(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the VGG19 architecture.
 
@@ -114,6 +115,8 @@ def VGG19(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -150,6 +153,11 @@ def VGG19(
             img_input = layers.Input(tensor=input_tensor, shape=input_shape)
         else:
             img_input = input_tensor
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
+        
     # Block 1
     x = layers.Conv2D(
         64, (3, 3), activation="relu", padding="same", name="block1_conv1"

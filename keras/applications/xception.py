@@ -58,6 +58,7 @@ def Xception(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the Xception architecture.
 
@@ -114,6 +115,8 @@ def Xception(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -151,6 +154,11 @@ def Xception(
             img_input = input_tensor
 
     channel_axis = 1 if backend.image_data_format() == "channels_first" else -1
+
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
 
     x = layers.Conv2D(
         32, (3, 3), strides=(2, 2), use_bias=False, name="block1_conv1"

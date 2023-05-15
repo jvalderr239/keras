@@ -38,6 +38,7 @@ def ResNet50V2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the ResNet50V2 architecture."""
 
@@ -59,6 +60,7 @@ def ResNet50V2(
         pooling,
         classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
@@ -73,6 +75,7 @@ def ResNet101V2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the ResNet101V2 architecture."""
 
@@ -94,6 +97,7 @@ def ResNet101V2(
         pooling,
         classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
@@ -108,6 +112,7 @@ def ResNet152V2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the ResNet152V2 architecture."""
 
@@ -129,14 +134,13 @@ def ResNet152V2(
         pooling,
         classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
 @keras_export("keras.applications.resnet_v2.preprocess_input")
 def preprocess_input(x, data_format=None):
-    return imagenet_utils.preprocess_input(
-        x, data_format=data_format, mode="tf"
-    )
+    return x
 
 
 @keras_export("keras.applications.resnet_v2.decode_predictions")

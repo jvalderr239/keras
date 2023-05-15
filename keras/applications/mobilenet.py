@@ -93,6 +93,7 @@ def MobileNet(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     """Instantiates the MobileNet architecture.
@@ -161,6 +162,8 @@ def MobileNet(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
       **kwargs: For backwards compatibility only.
     Returns:
       A `keras.Model` instance.
@@ -252,6 +255,11 @@ def MobileNet(
             img_input = layers.Input(tensor=input_tensor, shape=input_shape)
         else:
             img_input = input_tensor
+
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x) 
 
     x = _conv_block(img_input, 32, alpha, strides=(2, 2))
     x = _depthwise_conv_block(x, 64, alpha, depth_multiplier, block_id=1)

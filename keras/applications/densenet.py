@@ -141,6 +141,7 @@ def DenseNet(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the DenseNet architecture.
 
@@ -201,6 +202,8 @@ def DenseNet(
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network. Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -239,7 +242,12 @@ def DenseNet(
 
     bn_axis = 3 if backend.image_data_format() == "channels_last" else 1
 
-    x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)))(img_input)
+    x = img_input
+
+    if include_preprocessing:
+        x = preprocess_input(x)
+        
+    x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)))(x)
     x = layers.Conv2D(64, 7, strides=2, use_bias=False, name="conv1/conv")(x)
     x = layers.BatchNormalization(
         axis=bn_axis, epsilon=1.001e-5, name="conv1/bn"
@@ -353,6 +361,7 @@ def DenseNet121(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
 ):
     """Instantiates the Densenet121 architecture."""
     return DenseNet(
@@ -364,6 +373,7 @@ def DenseNet121(
         pooling,
         classes,
         classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
@@ -378,6 +388,7 @@ def DenseNet169(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
 ):
     """Instantiates the Densenet169 architecture."""
     return DenseNet(
@@ -389,6 +400,7 @@ def DenseNet169(
         pooling,
         classes,
         classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
@@ -403,6 +415,7 @@ def DenseNet201(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
 ):
     """Instantiates the Densenet201 architecture."""
     return DenseNet(
@@ -414,14 +427,30 @@ def DenseNet201(
         pooling,
         classes,
         classifier_activation,
+        include_preprocessing=include_preprocessing
     )
 
 
 @keras_export("keras.applications.densenet.preprocess_input")
 def preprocess_input(x, data_format=None):
-    return imagenet_utils.preprocess_input(
-        x, data_format=data_format, mode="torch"
-    )
+    """A placeholder method for backward compatibility.
+
+    The preprocessing logic has been included in the DenseNet model
+    implementation. Users are no longer required to call this method to
+    normalize the input data. This method does nothing and only kept as a
+    placeholder to align the API surface between old and new version of model.
+
+    Args:
+      x: A floating point `numpy.array` or a `tf.Tensor`.
+      data_format: Optional data format of the image tensor/array. Defaults to
+        None, in which case the global setting
+        `tf.keras.backend.image_data_format()` is used (unless you changed it,
+        it defaults to "channels_last").{mode}
+
+    Returns:
+      Unchanged `numpy.array` or `tf.Tensor`.
+    """
+    return x
 
 
 @keras_export("keras.applications.densenet.decode_predictions")

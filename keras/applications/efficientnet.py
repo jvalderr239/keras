@@ -249,6 +249,7 @@ def EfficientNet(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
 ):
     """Instantiates the EfficientNet architecture.
 
@@ -290,6 +291,8 @@ def EfficientNet(
       classifier_activation: A `str` or callable. The activation function to use
           on the "top" layer. Ignored unless `include_top=True`. Set
           `classifier_activation=None` to return the logits of the "top" layer.
+      include_preprocessing: Boolean, whether to include the preprocessing layer
+        at the bottom of the network (pass-through). Defaults to `True`.
 
     Returns:
       A `keras.Model` instance.
@@ -354,6 +357,11 @@ def EfficientNet(
 
     # Build stem
     x = img_input
+
+    if include_preprocessing:
+        # Pass through function but applied for consistency
+        x = preprocess_input(x)
+        
     x = layers.Rescaling(1.0 / 255.0)(x)
     x = layers.Normalization(axis=bn_axis)(x)
     if weights == "imagenet":
@@ -595,6 +603,7 @@ def EfficientNetB0(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     return EfficientNet(
@@ -610,6 +619,7 @@ def EfficientNetB0(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -626,6 +636,7 @@ def EfficientNetB1(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     return EfficientNet(
@@ -641,6 +652,7 @@ def EfficientNetB1(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -657,6 +669,7 @@ def EfficientNetB2(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
     **kwargs,
 ):
     return EfficientNet(
@@ -672,6 +685,7 @@ def EfficientNetB2(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -688,6 +702,7 @@ def EfficientNetB3(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     return EfficientNet(
@@ -703,6 +718,7 @@ def EfficientNetB3(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -719,6 +735,7 @@ def EfficientNetB4(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
     **kwargs,
 ):
     return EfficientNet(
@@ -734,6 +751,7 @@ def EfficientNetB4(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -750,6 +768,7 @@ def EfficientNetB5(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True,
     **kwargs,
 ):
     return EfficientNet(
@@ -765,6 +784,7 @@ def EfficientNetB5(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing,
         **kwargs,
     )
 
@@ -781,6 +801,7 @@ def EfficientNetB6(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
     **kwargs,
 ):
     return EfficientNet(
@@ -796,6 +817,7 @@ def EfficientNetB6(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
         **kwargs,
     )
 
@@ -812,6 +834,7 @@ def EfficientNetB7(
     pooling=None,
     classes=1000,
     classifier_activation="softmax",
+    include_preprocessing=True
     **kwargs,
 ):
     return EfficientNet(
@@ -827,6 +850,7 @@ def EfficientNetB7(
         pooling=pooling,
         classes=classes,
         classifier_activation=classifier_activation,
+        include_preprocessing=include_preprocessing
         **kwargs,
     )
 
